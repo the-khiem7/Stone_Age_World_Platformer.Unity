@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 283a66a14b787fd478c3a777e9f36cca
+timeCreated: 1489926583
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 86769
+  packageName: 2D Stone Age World Platformer Starter Kit
+  packageVersion: 1.5
+  assetPath: Assets/2D_STONE AGE WORLD/Assets/Player/Animations/H_M_HIT.anim
+  uploadId: 411948

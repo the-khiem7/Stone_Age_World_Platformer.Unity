@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d58ab665b2a680a4daaa6eb2df767f49
+timeCreated: 1489599933
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 86769
+  packageName: 2D Stone Age World Platformer Starter Kit
+  packageVersion: 1.5
+  assetPath: Assets/2D_STONE AGE WORLD/Assets/Player/Animations/H_M_Anim.controller
+  uploadId: 411948

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f7262495b19e7aa42bf4f57379e94b6c
+timeCreated: 1489930249
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 86769
+  packageName: 2D Stone Age World Platformer Starter Kit
+  packageVersion: 1.5
+  assetPath: Assets/2D_STONE AGE WORLD/Assets/Player/Animations/H_M_DEATH.anim
+  uploadId: 411948

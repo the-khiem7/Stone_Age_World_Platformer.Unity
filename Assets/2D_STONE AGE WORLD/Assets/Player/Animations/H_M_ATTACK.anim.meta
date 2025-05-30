@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2b66939c676eff349b16eae6a8bb0727
+timeCreated: 1489928238
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 86769
+  packageName: 2D Stone Age World Platformer Starter Kit
+  packageVersion: 1.5
+  assetPath: Assets/2D_STONE AGE WORLD/Assets/Player/Animations/H_M_ATTACK.anim
+  uploadId: 411948

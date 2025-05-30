@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 3065a6220bc078544a160dc137f90582
+timeCreated: 1490461752
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 86769
+  packageName: 2D Stone Age World Platformer Starter Kit
+  packageVersion: 1.5
+  assetPath: Assets/2D_STONE AGE WORLD/Assets/Player/Prefabs/Player_Atlas_H_M.prefab
+  uploadId: 411948
