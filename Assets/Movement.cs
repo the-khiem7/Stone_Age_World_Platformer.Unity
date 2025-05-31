@@ -18,7 +18,14 @@ public class Movement : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        // Get or add Rigidbody2D component
         rb = GetComponent<Rigidbody2D>();
+        if (rb == null)
+        {
+            rb = gameObject.AddComponent<Rigidbody2D>();
+            // Configure default values
+            rb.freezeRotation = true;
+        }
         
         // Create a ground check object if not assigned
         if (groundCheck == null)
