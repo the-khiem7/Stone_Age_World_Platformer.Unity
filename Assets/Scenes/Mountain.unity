@@ -1214,7 +1214,7 @@ Tilemap:
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
-  m_Color: {r: 0.745283, g: 0.34816512, b: 0.116011046, a: 1}
+  m_Color: {r: 0.7735849, g: 0.47183663, b: 0.29556784, a: 1}
   m_Origin: {x: -24, y: -12, z: 0}
   m_Size: {x: 48, y: 12, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
@@ -1525,7 +1525,10 @@ PrefabInstance:
       value: Example_Level_4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 7217291004566492715, guid: 0a59428ca264ad94eb7022a4b9ec4e4d, type: 3}
+    - {fileID: 114282165810873594, guid: 0a59428ca264ad94eb7022a4b9ec4e4d, type: 3}
+    - {fileID: 8185469623833757661, guid: 0a59428ca264ad94eb7022a4b9ec4e4d, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0a59428ca264ad94eb7022a4b9ec4e4d, type: 3}
