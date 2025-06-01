@@ -152,8 +152,8 @@ public class Movement : MonoBehaviour
         {
             isGrounded = Physics2D.Raycast(groundCheckPoint.position, Vector2.down, 0.3f, groundLayer);
         }
-          // FORCE GROUNDED FOR TESTING - Uncomment this line if ground detection isn't working
-        isGrounded = true; // TEMPORARY FIX - REMOVE AFTER TESTING
+        // FORCE GROUNDED FOR TESTING - Uncomment this line if ground detection isn't working
+        // isGrounded = true; // TEMPORARY FIX - REMOVE AFTER TESTING
         
         // Update the last grounded time for coyote time
         if (isGrounded)
@@ -166,16 +166,13 @@ public class Movement : MonoBehaviour
                 isJumping = false;
                 jumpCut = false;
             }
-        }
-
-        // ALWAYS log ground detection status for debugging
-        Debug.Log("Ground check: " + isGrounded + 
-                 " | Position: " + groundCheckPoint.position +
-                 " | Layer: " + groundLayer.value);
-
-        // Log ground state changes
+        }        
+        // Only log ground state changes when transitioning from grounded to not grounded or vice versa. This is to avoid spamming the console.
         if (wasGrounded != isGrounded)
         {
+            Debug.Log("Ground check: " + isGrounded + 
+                     " | Position: " + groundCheckPoint.position +
+                     " | Layer: " + groundLayer.value);
             Debug.LogWarning("Grounded state changed to: " + isGrounded);
         }
     }private void MoveCharacter()
