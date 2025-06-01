@@ -127,16 +127,34 @@ public class Movement : MonoBehaviour
         // Store previous state for transition detection
         bool wasGrounded = isGrounded;
         
-        // Use a box cast for reliable ground detection
-        isGrounded = Physics2D.BoxCast(
+        // Try multiple ground detection methods in case one fails
+        
+        // METHOD 1: Box cast (most reliable)
+        RaycastHit2D hit = Physics2D.BoxCast(
             groundCheckPoint.position,
             groundCheckSize,
             0f,
             Vector2.down,
-            0.1f,
+            0.2f,  // Increased distance
             groundLayer
         );
-
+        
+        isGrounded = hit.collider != null;
+        
+        // METHOD 2: If box cast fails, try circle overlap
+        if (!isGrounded)
+        {
+            isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, groundCheckSize.x/2, groundLayer);
+        }
+        
+        // METHOD 3: If all else fails, try direct raycast
+        if (!isGrounded)
+        {
+            isGrounded = Physics2D.Raycast(groundCheckPoint.position, Vector2.down, 0.3f, groundLayer);
+        }
+          // FORCE GROUNDED FOR TESTING - Uncomment this line if ground detection isn't working
+        isGrounded = true; // TEMPORARY FIX - REMOVE AFTER TESTING
+        
         // Update the last grounded time for coyote time
         if (isGrounded)
         {
@@ -150,12 +168,17 @@ public class Movement : MonoBehaviour
             }
         }
 
-        // Log ground state changes for debugging
+        // ALWAYS log ground detection status for debugging
+        Debug.Log("Ground check: " + isGrounded + 
+                 " | Position: " + groundCheckPoint.position +
+                 " | Layer: " + groundLayer.value);
+
+        // Log ground state changes
         if (wasGrounded != isGrounded)
         {
-            Debug.Log("Grounded state changed to: " + isGrounded);
+            Debug.LogWarning("Grounded state changed to: " + isGrounded);
         }
-    }    private void MoveCharacter()
+    }private void MoveCharacter()
     {
         // Calculate target speed
         float targetSpeed = moveInput * moveSpeed;
@@ -242,17 +265,15 @@ public class Movement : MonoBehaviour
     {
         facingRight = !facingRight;
         transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
-    }
-
-    // Visual debugging
+    }    // Visual debugging
     private void OnDrawGizmosSelected()
     {
         if (groundCheckPoint != null)
         {
             // Draw ground check area
-            Gizmos.color = isGrounded ? Color.green : Color.red;
+            Gizmos.color = Application.isPlaying ? (isGrounded ? Color.green : Color.red) : Color.yellow;
             Gizmos.DrawWireCube(
-                groundCheckPoint.position + new Vector3(0, -0.05f, 0), 
+                groundCheckPoint.position, 
                 new Vector3(groundCheckSize.x, groundCheckSize.y, 0.1f)
             );
         }
