@@ -1,197 +1,260 @@
 using UnityEngine;
 
+/// <summary>
+/// Handles 2D platformer character movement including running and jumping
+/// </summary>
 public class Movement : MonoBehaviour
 {
-    [Header("Movement Settings")]    [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float jumpForce = 15f;
-    
-    [Header("Ground Check")]
-    [SerializeField] private Transform groundCheck;
-    [SerializeField] private float groundCheckRadius = 0.2f;
+    [Header("Movement")]
+    [SerializeField] private float moveSpeed = 8f;
+    [SerializeField] private float acceleration = 50f;
+    [SerializeField] private float deceleration = 50f;
+    [SerializeField] private float velocityPower = 0.9f;
+    [SerializeField] private bool useSmoothMovement = true;
+
+    [Header("Jump Settings")]
+    [SerializeField] private float jumpForce = 16f;
+    [SerializeField] private float jumpCutMultiplier = 0.5f;
+    [SerializeField] private float fallGravityMultiplier = 1.7f;
+    [SerializeField] private float coyoteTime = 0.2f;
+    [SerializeField] private float jumpBufferTime = 0.2f;
+
+    [Header("Ground Detection")]
+    [SerializeField] private Transform groundCheckPoint;
+    [SerializeField] private Vector2 groundCheckSize = new Vector2(0.9f, 0.2f);
     [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private bool showDebug = true;
 
+    // Private variables
     private Rigidbody2D rb;
+    private float moveInput;
+    private bool isJumpPressed;
+    private bool isJumping;
     private bool isGrounded;
-    private float horizontalInput;
+    private float lastGroundedTime;
+    private float lastJumpPressedTime;
+    private bool facingRight = true;
+    private bool jumpCut;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    // Constants
+    private const float MIN_JUMP_SPEED = 0.1f;
+
+    private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+    }
 
+    private void Start()
+    {
+        // Validate components
         if (rb == null)
         {
             rb = gameObject.AddComponent<Rigidbody2D>();
             rb.freezeRotation = true;
+            Debug.Log("Added missing Rigidbody2D component to " + gameObject.name);
         }
-          // Create a ground check object if not assigned
-        if (groundCheck == null)
+
+        // Create a ground check transform if none is assigned
+        if (groundCheckPoint == null)
         {
             GameObject checkObject = new GameObject("GroundCheck");
             checkObject.transform.parent = transform;
-            // Position it lower to ensure it's below the character's feet
-            checkObject.transform.localPosition = new Vector3(0, -0.5f, 0);
-            groundCheck = checkObject.transform;
-            Debug.Log("Ground check created at position Y=-0.5. Please adjust its position if needed.");
+            checkObject.transform.localPosition = new Vector3(0, -0.95f, 0); // Position at feet
+            groundCheckPoint = checkObject.transform;
+            Debug.Log("Created ground check point at bottom of character");
         }
-        
-        // Verify ground layer is assigned
+
+        // Warn if ground layer is not set
         if (groundLayer.value == 0)
         {
-            Debug.LogError("Ground Layer not assigned! Please set it in the inspector. Jumping will not work without this!");
-            
-            // Set a default layer (Layer 8 is often used for ground)
-            // Note: You still need to set up this layer in Unity's Layer settings
-            groundLayer = 1 << 8; // This sets it to layer 8
-            Debug.Log("Temporarily set ground layer to Layer 8. Please configure this properly in the Inspector.");
+            Debug.LogError("Ground Layer not set! Please assign it in the inspector (Layer 8 is recommended)");
+            // Auto-assign to layer 8 as a fallback
+            groundLayer = 1 << 8;
         }
     }
-      // Update is called once per frame
-    void Update()
+
+    private void Update()
     {
-        // Get horizontal input (A, D keys or left, right arrow keys)
-        horizontalInput = Input.GetAxisRaw("Horizontal");
+        // Handle player input
+        moveInput = Input.GetAxisRaw("Horizontal");
         
-        // Alternatively, use direct key detection for A and D keys
-        if (Input.GetKey(KeyCode.A))
+        // Direct key detection as backup
+        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
         {
-            horizontalInput = -1;
+            moveInput = -1;
         }
-        else if (Input.GetKey(KeyCode.D))
+        else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
         {
-            horizontalInput = 1;
+            moveInput = 1;
         }
-        
-        // Jump when W or Space is pressed
-        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space))
+
+        // Jump input processing with buffer time
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
         {
-            Debug.LogWarning("Jump key pressed!");
-            // Print debug info if showDebug is enabled
-            if (showDebug)
-                Debug.Log("Jump key pressed! isGrounded = " + isGrounded + ", position = " + transform.position);
-            
-            if (isGrounded)
+            isJumpPressed = true;
+            lastJumpPressedTime = Time.time;
+            Debug.Log("Jump button pressed. isGrounded: " + isGrounded + ", Time: " + Time.time);
+        }        // Jump cut (shorter jump when button released)
+        if (Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.UpArrow))
+        {
+            if (rb.linearVelocity.y > 0 && isJumping)
             {
-                Jump();
-            }
-            else
-            {
-                Debug.LogWarning("Jump failed - character not grounded!");
+                jumpCut = true;
             }
         }
-    }    void FixedUpdate()
+
+        // Coyote time and jump buffer logic
+        if (CanJump() && isJumpPressed)
+        {
+            ExecuteJump();
+        }
+    }
+
+    private void FixedUpdate()
     {
-        // Check if grounded - increase the radius for better detection
+        // Check if character is grounded
+        CheckGrounded();
+        
+        // Apply the appropriate movement
+        MoveCharacter();
+        
+        // Handle gravity modification for better jump feel
+        ApplyGravityModifier();
+        
+        // Flip the character sprite based on movement direction
+        HandleSpriteFlip();
+    }    private void CheckGrounded()
+    {
+        // Store previous state for transition detection
         bool wasGrounded = isGrounded;
         
-        // Reset isGrounded before checking
-        isGrounded = false;
-        
-        // FIRST METHOD: Try using OverlapCircle with larger radius
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius * 1.5f, groundLayer);
-        
-        // SECOND METHOD: If that fails, try a boxcast with larger area
-        if (!isGrounded) {
-            // Use a wider and taller box for better detection
-            isGrounded = Physics2D.BoxCast(
-                groundCheck.position,  // Origin
-                new Vector2(1.0f, 0.2f),  // Size (wider box)
-                0f,  // Angle
-                Vector2.down,  // Direction
-                0.2f,  // Distance
-                groundLayer  // Layer mask
-            );
-        }
-        
-        // THIRD METHOD: If that fails too, use multiple raycasts
-        if (!isGrounded) {
-            float rayDist = 0.3f;  // Increased ray distance
-            // Center raycast
-            isGrounded = Physics2D.Raycast(groundCheck.position, Vector2.down, rayDist, groundLayer);
-            
-            // Left raycast
-            if (!isGrounded) {
-                Vector2 leftPos = groundCheck.position + new Vector3(-0.3f, 0f, 0f);
-                isGrounded = Physics2D.Raycast(leftPos, Vector2.down, rayDist, groundLayer);
-            }
-            
-            // Right raycast
-            if (!isGrounded) {
-                Vector2 rightPos = groundCheck.position + new Vector3(0.3f, 0f, 0f);
-                isGrounded = Physics2D.Raycast(rightPos, Vector2.down, rayDist, groundLayer);
-            }
-        }
-        
-        // DEBUG: Always log ground check status in FixedUpdate
-        if (showDebug)
+        // Use a box cast for reliable ground detection
+        isGrounded = Physics2D.BoxCast(
+            groundCheckPoint.position,
+            groundCheckSize,
+            0f,
+            Vector2.down,
+            0.1f,
+            groundLayer
+        );
+
+        // Update the last grounded time for coyote time
+        if (isGrounded)
         {
-            Debug.Log("Ground check: " + isGrounded + 
-                     " at position " + groundCheck.position +
-                     " with layer mask: " + groundLayer.value);
+            lastGroundedTime = Time.time;
+            
+            // Reset jump state when landing
+            if (rb.linearVelocity.y <= 0)
+            {
+                isJumping = false;
+                jumpCut = false;
+            }
         }
-        
-        // Log when grounded state changes
+
+        // Log ground state changes for debugging
         if (wasGrounded != isGrounded)
         {
-            Debug.Log("Grounded state changed to: " + isGrounded + " at position " + transform.position);
+            Debug.Log("Grounded state changed to: " + isGrounded);
         }
-        
-        // Apply horizontal movement
-        Move();
-    }
-    
-    void Move()
+    }    private void MoveCharacter()
     {
-        // Calculate velocity
-        Vector2 targetVelocity = new Vector2(horizontalInput * moveSpeed, rb.linearVelocity.y);
+        // Calculate target speed
+        float targetSpeed = moveInput * moveSpeed;
         
-        // Apply the velocity to the rigidbody
-        rb.linearVelocity = targetVelocity;
-          // Flip character sprite based on direction (if needed)
-        if (horizontalInput != 0)
+        if (useSmoothMovement)
         {
-            transform.localScale = new Vector3(Mathf.Sign(horizontalInput), 1, 1);
+            // Calculate speed difference
+            float speedDiff = targetSpeed - rb.linearVelocity.x;
+            
+            // Calculate acceleration rate based on direction
+            float accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? acceleration : deceleration;
+            
+            // Apply movement force with non-linear acceleration for smoother feel
+            float movement = Mathf.Pow(Mathf.Abs(speedDiff) * accelRate, velocityPower) * Mathf.Sign(speedDiff);
+            rb.AddForce(movement * Vector2.right);
+        }
+        else
+        {
+            // Simple movement - directly set velocity
+            rb.linearVelocity = new Vector2(targetSpeed, rb.linearVelocity.y);
+        }
+        
+        // Cap maximum speed
+        if (Mathf.Abs(rb.linearVelocity.x) > moveSpeed)
+        {
+            rb.linearVelocity = new Vector2(moveSpeed * Mathf.Sign(rb.linearVelocity.x), rb.linearVelocity.y);
         }
     }
-    void Jump()
+
+    private bool CanJump()
     {
-        // Apply jump force directly to the Y velocity component
-        // rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+        // Can jump if within coyote time or grounded
+        float timeSinceGrounded = Time.time - lastGroundedTime;
+        return timeSinceGrounded <= coyoteTime && !isJumping;
+    }    private void ExecuteJump()
+    {
+        // Reset velocity y to ensure consistent jump height
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
         
-        // Method 2 (Alternative): Uncomment this if the above method doesn't work
+        // Apply the jump force
         rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
         
-        // Debug jump action
-        Debug.Log("JUMP! Applied force: " + jumpForce + ", new velocity: " + rb.linearVelocity);
+        // Reset jump pressed flag
+        isJumpPressed = false;
         
-        // Optional: Add a jumping sound effect
-        // if (jumpSound != null) AudioSource.PlayClipAtPoint(jumpSound, transform.position);
+        // Set jumping state
+        isJumping = true;
         
-        // Force the isGrounded to false immediately after jumping to prevent multiple jumps
-        isGrounded = false;
-    }    // Visual debugging
-    void OnDrawGizmosSelected()
+        // Debug
+        Debug.Log("JUMP executed with force: " + jumpForce);
+    }    private void ApplyGravityModifier()
     {
-        if (groundCheck != null)
+        // Increase gravity when falling for better feel
+        if (rb.linearVelocity.y < 0)
         {
-            // Draw the ground check circle with appropriate color
+            rb.gravityScale = fallGravityMultiplier;
+        }
+        // Apply jump cut (shorter jump when button released early)
+        else if (rb.linearVelocity.y > 0 && jumpCut)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * jumpCutMultiplier);
+            jumpCut = false;
+        }
+        else
+        {
+            rb.gravityScale = 1f;
+        }
+    }
+
+    private void HandleSpriteFlip()
+    {
+        // Flip the character based on movement direction
+        if (moveInput > 0 && !facingRight)
+        {
+            FlipCharacter();
+        }
+        else if (moveInput < 0 && facingRight)
+        {
+            FlipCharacter();
+        }
+    }
+
+    private void FlipCharacter()
+    {
+        facingRight = !facingRight;
+        transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+    }
+
+    // Visual debugging
+    private void OnDrawGizmosSelected()
+    {
+        if (groundCheckPoint != null)
+        {
+            // Draw ground check area
             Gizmos.color = isGrounded ? Color.green : Color.red;
-            Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius * 1.5f);
-            
-            // Draw the box cast area
-            Gizmos.DrawWireCube(groundCheck.position + new Vector3(0, -0.1f, 0), new Vector3(1.0f, 0.2f, 0.1f));
-            
-            // Draw the raycasts
-            float rayDist = 0.3f;
-            // Center raycast
-            Gizmos.DrawLine(groundCheck.position, groundCheck.position + Vector3.down * rayDist);
-            // Left raycast
-            Vector3 leftPos = groundCheck.position + new Vector3(-0.3f, 0f, 0f);
-            Gizmos.DrawLine(leftPos, leftPos + Vector3.down * rayDist);
-            // Right raycast  
-            Vector3 rightPos = groundCheck.position + new Vector3(0.3f, 0f, 0f);
-            Gizmos.DrawLine(rightPos, rightPos + Vector3.down * rayDist);
+            Gizmos.DrawWireCube(
+                groundCheckPoint.position + new Vector3(0, -0.05f, 0), 
+                new Vector3(groundCheckSize.x, groundCheckSize.y, 0.1f)
+            );
         }
     }
 }
