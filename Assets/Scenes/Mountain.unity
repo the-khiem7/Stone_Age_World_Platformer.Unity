@@ -365,9 +365,9 @@ GameObject:
   - component: {fileID: 265995142}
   - component: {fileID: 265995141}
   - component: {fileID: 265995143}
+  - component: {fileID: 265995146}
   - component: {fileID: 265995145}
   - component: {fileID: 265995144}
-  - component: {fileID: 265995146}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -472,7 +472,7 @@ MonoBehaviour:
   groundCheckSize: {x: 0.9, y: 0.2}
   groundLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
 --- !u!70 &265995144
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -568,7 +568,7 @@ GameObject:
   - component: {fileID: 283382062}
   - component: {fileID: 283382061}
   - component: {fileID: 283382063}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
