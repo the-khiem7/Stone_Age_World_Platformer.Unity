@@ -49,11 +49,11 @@ public class SmoothCameraFollow : MonoBehaviour
         
         // Check edges and adjust zoom
         AdjustZoomBasedOnBackgroundEdges();
-    }
-      private void AdjustZoomBasedOnBackgroundEdges()
+    }      private void AdjustZoomBasedOnBackgroundEdges()
     {
         float targetSize = defaultOrthographicSize; // Start with default zoom level
         float closestEdgeDistance = float.MaxValue; // Track the closest edge distance
+        bool edgeDetected = false; // Track if we've detected any edge
         
         // Check in all 4 directions for background edges
         Vector3[] checkDirections = new Vector3[] {
@@ -66,52 +66,97 @@ public class SmoothCameraFollow : MonoBehaviour
         // Calculate viewport bounds in world space
         float vertExtent = cam.orthographicSize;
         float horizExtent = vertExtent * cam.aspect;
-        float maxDetectionDistance = 5f; // Maximum distance to consider for zoom adjustment
+        float maxDetectionDistance = 10f; // Increased detection range
+        
+        // Multiple raycasts per direction for better edge detection
+        int raysPerDirection = 3; // Cast multiple rays for better coverage
         
         foreach (Vector3 dir in checkDirections)
         {
-            // Calculate the point to check at the camera edge
-            Vector3 checkPoint = transform.position;
+            // Cast multiple rays along each edge
+            bool backgroundFoundInDirection = false;
             
-            if (dir == Vector3.right)
-                checkPoint.x += horizExtent;
-            else if (dir == Vector3.left)
-                checkPoint.x -= horizExtent;
-            else if (dir == Vector3.up)
-                checkPoint.y += vertExtent;
-            else if (dir == Vector3.down)
-                checkPoint.y -= vertExtent;
-            
-            // Cast a ray to check for background
-            RaycastHit2D hit = Physics2D.Raycast(checkPoint, dir, maxDetectionDistance);
-            if (hit.collider != null && hit.collider.CompareTag(backgroundTag))
+            for (int i = 0; i < raysPerDirection; i++)
             {
-                // We found an edge, calculate distance
-                float distance = hit.distance;
+                // Calculate the point to check at the camera edge with offset
+                Vector3 checkPoint = transform.position;
+                float offset = 0f;
                 
-                // Update closest distance if this one is smaller
-                if (distance < closestEdgeDistance)
+                if (dir == Vector3.right)
                 {
-                    closestEdgeDistance = distance;
+                    checkPoint.x += horizExtent;
+                    offset = (i - (raysPerDirection-1)/2f) * vertExtent / ((raysPerDirection-1) * 0.5f);
+                    checkPoint.y += offset;
                 }
+                else if (dir == Vector3.left)
+                {
+                    checkPoint.x -= horizExtent;
+                    offset = (i - (raysPerDirection-1)/2f) * vertExtent / ((raysPerDirection-1) * 0.5f);
+                    checkPoint.y += offset;
+                }
+                else if (dir == Vector3.up)
+                {
+                    checkPoint.y += vertExtent;
+                    offset = (i - (raysPerDirection-1)/2f) * horizExtent / ((raysPerDirection-1) * 0.5f);
+                    checkPoint.x += offset;
+                }
+                else if (dir == Vector3.down)
+                {
+                    checkPoint.y -= vertExtent;
+                    offset = (i - (raysPerDirection-1)/2f) * horizExtent / ((raysPerDirection-1) * 0.5f);
+                    checkPoint.x += offset;
+                }
+                
+                // Display debug ray in scene view
+                Debug.DrawRay(checkPoint, dir * maxDetectionDistance, Color.red, 0.1f);
+                
+                // Cast a ray to check for background
+                RaycastHit2D hit = Physics2D.Raycast(checkPoint, dir, maxDetectionDistance);
+                if (hit.collider != null && hit.collider.CompareTag(backgroundTag))
+                {
+                    // We found a background in this direction
+                    backgroundFoundInDirection = true;
+                    
+                    // Update closest distance if this hit is closer
+                    float distance = hit.distance;
+                    if (distance < closestEdgeDistance)
+                    {
+                        closestEdgeDistance = distance;
+                    }
+                }
+            }
+            
+            // If no background found in this entire direction
+            if (!backgroundFoundInDirection)
+            {
+                // No background detected in this direction - immediate action needed
+                closestEdgeDistance = 0f; // Force minimum zoom
+                edgeDetected = true;
+                break; // Stop checking other directions, need to zoom in now
+            }
+            else
+            {
+                edgeDetected = true; // We found at least one edge
             }
         }
         
-        // Adjust zoom based on distance to closest edge
-        if (closestEdgeDistance < maxDetectionDistance)
+        // Adjust zoom based on edge detection results
+        if (edgeDetected)
         {
             // Calculate zoom level based on distance - closer means more zoomed in
-            // Map the distance [0...maxDetectionDistance] to zoom level [minOrthographicSize...defaultOrthographicSize]
-            float zoomFactor = Mathf.InverseLerp(0, maxDetectionDistance, closestEdgeDistance);
+            // Using a more aggressive curve with stronger bias toward zoomed-in state
+            float zoomFactor = Mathf.InverseLerp(0, maxDetectionDistance * 0.6f, closestEdgeDistance);
+            zoomFactor = Mathf.Pow(zoomFactor, 1.5f); // Apply power curve for more aggressive zoom
             targetSize = Mathf.Lerp(minOrthographicSize, defaultOrthographicSize, zoomFactor);
         }
         
-        // Apply the zoom smoothly
+        // Apply the zoom smoothly - using a faster zoom time when zooming in to hide empty space
+        float currentZoomTime = closestEdgeDistance < 1f ? zoomSmoothTime * 0.3f : zoomSmoothTime;
         cam.orthographicSize = Mathf.SmoothDamp(
             cam.orthographicSize, 
             targetSize, 
             ref zoomVelocity, 
-            zoomSmoothTime
+            currentZoomTime
         );
     }
 }
