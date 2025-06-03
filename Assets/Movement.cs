@@ -12,6 +12,9 @@ public class Movement : MonoBehaviour
     [SerializeField] private float velocityPower = 0.9f;
     [SerializeField] private bool useSmoothMovement = true;
 
+    // Added to store initial position for reset functionality
+    private Vector3 startPosition;
+
     [Header("Jump Settings")]
     [SerializeField] private float jumpForce = 16f;
     [SerializeField] private float jumpCutMultiplier = 0.5f;
@@ -45,6 +48,9 @@ public class Movement : MonoBehaviour
 
     private void Start()
     {
+        // Save the initial position of the character
+        startPosition = transform.position;
+
         // Validate components
         if (rb == null)
         {
@@ -274,5 +280,22 @@ public class Movement : MonoBehaviour
                 new Vector3(groundCheckSize.x, groundCheckSize.y, 0.1f)
             );
         }
+    }
+    
+    /// <summary>
+    /// Resets the character to its starting position
+    /// </summary>
+    public void ResetToStartPosition()
+    {        // Stop all momentum
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+        }
+        
+        // Return to start position
+        transform.position = startPosition;
+        
+        // Optional: Log the reset for debugging
+        Debug.Log("Character reset to starting position due to water contact");
     }
 }
