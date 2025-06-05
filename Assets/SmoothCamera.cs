@@ -63,11 +63,10 @@ public class SmoothCameraFollow : MonoBehaviour
             Vector3.up,      // Up
             Vector3.down     // Down
         };
-        
-        // Calculate viewport bounds in world space
+          // Calculate viewport bounds in world space
         float vertExtent = cam.orthographicSize;
         float horizExtent = vertExtent * cam.aspect;
-        float maxDetectionDistance = 10f; // Increased detection range
+        float maxDetectionDistance = 10f; // Maximum detection range
         
         // Multiple raycasts per direction for better edge detection
         int raysPerDirection = 3; // Cast multiple rays for better coverage
@@ -139,14 +138,18 @@ public class SmoothCameraFollow : MonoBehaviour
             {
                 edgeDetected = true; // We found at least one edge
             }
-        }
-          // Adjust zoom based on edge detection results
+        }          // Adjust zoom based on edge detection results
         if (edgeDetected)
         {
             // Calculate zoom level based on distance - closer means more zoomed in
-            // Using a more aggressive curve with stronger bias toward zoomed-in state
-            float zoomFactor = Mathf.InverseLerp(0, maxDetectionDistance * zoomRatio, closestEdgeDistance);
-            zoomFactor = Mathf.Pow(zoomFactor, 1.5f); // Apply power curve for more aggressive zoom
+            // Using a curve affected by zoomRatio
+            float zoomDistance = maxDetectionDistance * zoomRatio; // Distance at which zoom starts to change
+            float zoomFactor = Mathf.InverseLerp(0, zoomDistance, closestEdgeDistance);
+            
+            // Apply power curve - higher zoomRatio = gentler curve, lower = steeper curve
+            float curvePower = 2.0f - zoomRatio; // Dynamic curve power based on zoomRatio
+            zoomFactor = Mathf.Pow(zoomFactor, curvePower); 
+            
             targetSize = Mathf.Lerp(minOrthographicSize, defaultOrthographicSize, zoomFactor);
         }
         

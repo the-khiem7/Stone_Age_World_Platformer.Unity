@@ -4105,7 +4105,7 @@ MonoBehaviour:
   minOrthographicSize: 3
   zoomSmoothTime: 0.3
   edgeCheckDistance: 1
-  zoomRatio: 0.8
+  zoomRatio: 0.6
 --- !u!1 &1199055926
 GameObject:
   m_ObjectHideFlags: 0
