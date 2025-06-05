@@ -12,6 +12,7 @@ public class SmoothCameraFollow : MonoBehaviour
     [SerializeField] private float minOrthographicSize = 3f;
     [SerializeField] private float zoomSmoothTime = 0.3f;
     [SerializeField] private float edgeCheckDistance = 1f;  // Distance to check for background edges
+    [SerializeField] private float zoomRatio = 0.6f;  // Ratio for zoom calculation (lower = more aggressive zoom)
     
     private Vector3 velocity = Vector3.zero;
     private Camera cam;
@@ -139,13 +140,12 @@ public class SmoothCameraFollow : MonoBehaviour
                 edgeDetected = true; // We found at least one edge
             }
         }
-        
-        // Adjust zoom based on edge detection results
+          // Adjust zoom based on edge detection results
         if (edgeDetected)
         {
             // Calculate zoom level based on distance - closer means more zoomed in
             // Using a more aggressive curve with stronger bias toward zoomed-in state
-            float zoomFactor = Mathf.InverseLerp(0, maxDetectionDistance * 0.6f, closestEdgeDistance);
+            float zoomFactor = Mathf.InverseLerp(0, maxDetectionDistance * zoomRatio, closestEdgeDistance);
             zoomFactor = Mathf.Pow(zoomFactor, 1.5f); // Apply power curve for more aggressive zoom
             targetSize = Mathf.Lerp(minOrthographicSize, defaultOrthographicSize, zoomFactor);
         }
