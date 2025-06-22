@@ -823,7 +823,7 @@ GameObject:
   - component: {fileID: 265995143}
   - component: {fileID: 265995145}
   - component: {fileID: 265995144}
-  - component: {fileID: 265995146}
+  - component: {fileID: 265995147}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -929,6 +929,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
+  animator: {fileID: 0}
 --- !u!70 &265995144
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -993,26 +994,28 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &265995146
-MonoBehaviour:
+--- !u!95 &265995147
+Animator:
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 265995140}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb48706c4f42d1543966b6cc7c58071d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  smoothTime: 0.25
-  backgroundTag: Background
-  defaultOrthographicSize: 5
-  minOrthographicSize: 3
-  zoomSmoothTime: 2
-  edgeCheckDistance: 1
-  zoomRatio: 0.6
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: c86f0544af3342541ad0a10bc83cc6a8, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &283382059
 GameObject:
   m_ObjectHideFlags: 0
@@ -4080,7 +4083,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1182282679}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
   m_Name: 
@@ -4124,7 +4127,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1182282679}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eb48706c4f42d1543966b6cc7c58071d, type: 3}
   m_Name: 
@@ -4137,6 +4140,9 @@ MonoBehaviour:
   zoomSmoothTime: 0.3
   edgeCheckDistance: 1
   zoomRatio: 0.6
+  velocity: {x: 0, y: 0, z: 0}
+  cam: {fileID: 0}
+  zoomVelocity: 0
 --- !u!1 &1199055926
 GameObject:
   m_ObjectHideFlags: 0

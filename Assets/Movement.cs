@@ -29,6 +29,7 @@ public class Movement : MonoBehaviour
 
     // Private variables
     private Rigidbody2D rb;
+    public Animator animator;
     private float moveInput;
     private bool isJumpPressed;
     private bool isJumping;
@@ -92,6 +93,12 @@ public class Movement : MonoBehaviour
         {
             moveInput = 1;
         }
+
+        // Setup animator parameters
+        animator.SetFloat("Speed", Mathf.Abs(moveInput));
+        animator.SetBool("IsJumping", isJumping);
+        animator.SetBool("IsGrounded", isGrounded);
+        animator.SetFloat("VerticalSpeed", rb.linearVelocity.y);
 
         // Jump input processing with buffer time
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
