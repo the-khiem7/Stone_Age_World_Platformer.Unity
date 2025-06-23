@@ -929,7 +929,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
-  animator: {fileID: 0}
+  animator: {fileID: 265995147}
 --- !u!70 &265995144
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -4132,17 +4132,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb48706c4f42d1543966b6cc7c58071d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 265995142}
-  smoothTime: 0.25
-  backgroundTag: Background
-  defaultOrthographicSize: 5
-  minOrthographicSize: 3
-  zoomSmoothTime: 0.3
-  edgeCheckDistance: 1
-  zoomRatio: 0.6
-  velocity: {x: 0, y: 0, z: 0}
-  cam: {fileID: 0}
-  zoomVelocity: 0
 --- !u!1 &1199055926
 GameObject:
   m_ObjectHideFlags: 0
