@@ -14,6 +14,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Mountain.unity
     guid: 8b97f95c4d5feed4caa4bbe6d2383b02
+  - enabled: 1
+    path: Assets/Scenes/Setting.unity
+    guid: 142271ec68a18f645bd91fa182134a19
+  - enabled: 1
+    path: Assets/Scenes/Guilde.unity
+    guid: 0a7b20174caea9f41868771b6e0f02a1
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

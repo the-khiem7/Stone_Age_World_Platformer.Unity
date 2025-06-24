@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: ce1a90034ffafd844aba98042d2844e9
+guid: 26ba5abe9d63b944195610726630b7b9
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3451699440861859892
-    second: MainMenu_0
+      213: -6569345325042880861
+    second: GuildeClose_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: MainMenu_0
+      name: GuildeClose_0
       rect:
         serializedVersion: 2
-        x: 126
-        y: 88
-        width: 3048
-        height: 1709
+        x: 0
+        y: 0
+        width: 202
+        height: 202
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ccfa30c75a91910d0800000000000000
-      internalID: -3451699440861859892
+      spriteID: 3ae22f59b3ff4d4a0800000000000000
+      internalID: -6569345325042880861
       vertices: []
       indices: 
       edges: []
@@ -134,8 +134,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      MainMenu_0: -3451699440861859892
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
