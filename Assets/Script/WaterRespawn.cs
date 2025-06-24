@@ -50,7 +50,7 @@ public class WaterRespawn : MonoBehaviour
         // Reset velocity if we have a Rigidbody2D
         if (rb2D != null)
         {
-            rb2D.velocity = Vector2.zero;
+            rb2D.linearVelocity = Vector2.zero;
             rb2D.angularVelocity = 0f;
             rb2D.position = respawnPoint.position;
         }
