@@ -1,10 +1,16 @@
 fileFormatVersion: 2
-guid: b88a3c34098b3b84798fbcc160fd383f
+guid: 889def5293204714db806665469e7249
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 174507820355795364
-    second: StoneBackground_0
+      213: -831574795015426820
+    second: Age_0
+  - first:
+      213: 7948762306261627059
+    second: Age_1
+  - first:
+      213: -7123592268581520466
+    second: Age_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,23 +106,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: StoneBackground_0
+      name: Age_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 2310
-        height: 1299
+        width: 582
+        height: 207
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4a9b5d220f9fb6200800000000000000
-      internalID: 174507820355795364
+      spriteID: cfcefea3127a574f0800000000000000
+      internalID: -831574795015426820
       vertices: []
       indices: 
       edges: []
@@ -125,7 +131,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 7a30dbeb92ef3174eb1567f0f9f38655
     internalID: 0
     vertices: []
     indices: 
@@ -134,7 +140,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Age_0: -831574795015426820
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

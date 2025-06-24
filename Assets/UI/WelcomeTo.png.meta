@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: b88a3c34098b3b84798fbcc160fd383f
+guid: e9cb4b1934fc26849a8c0da5b56f2722
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 174507820355795364
-    second: StoneBackground_0
+      213: 2135709975741577589
+    second: WelcomeTo_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: StoneBackground_0
+      name: WelcomeTo_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
-        width: 2310
-        height: 1299
+        y: 27
+        width: 1270
+        height: 198
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4a9b5d220f9fb6200800000000000000
-      internalID: 174507820355795364
+      spriteID: 579b55f48e093ad10800000000000000
+      internalID: 2135709975741577589
       vertices: []
       indices: 
       edges: []
